@@ -4,10 +4,11 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, DateTime, Float, Boolean
 from sqlalchemy.orm import sessionmaker
 from dateutil.parser import parse
-from util import post_listing_to_slack, find_points_of_interest
+from util import post_listing_to_slack, find_points_of_interest, post_listing_to_pushover
 from slackclient import SlackClient
 import time
 import settings
+import pushover
 
 engine = create_engine('sqlite:///listings.db', echo=False)
 
@@ -114,8 +115,15 @@ def do_scrape():
     Runs the craigslist scraper, and posts data to slack.
     """
 
-    # Create a slack client.
-    sc = SlackClient(settings.SLACK_TOKEN)
+    # Create a slack client if credentials exist
+    sc = None
+    if settings.SLACK_TOKEN:
+        sc = SlackClient(settings.SLACK_TOKEN)
+
+    # Create a pushover client is credentials exist
+    pc = None
+    if settings.PUSHOVER_USER and settings.PUSHOVER_TOKEN:
+        pc = pushover.Client(user_key=settings.PUSHOVER_USER, api_token=settings.PUSHOVER_TOKEN, device=settings.PUSHOVER_DEVICE)
 
     # Get all the results from craigslist.
     all_results = []
@@ -126,4 +134,7 @@ def do_scrape():
 
     # Post each result to slack.
     for result in all_results:
-        post_listing_to_slack(sc, result)
+        if sc:
+            post_listing_to_slack(sc, result)
+        if pc:
+            post_listing_to_pushover(pc, result)

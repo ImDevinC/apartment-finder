@@ -114,6 +114,15 @@ SLACK_CHANNEL = "#housing"
 # Should be put in private.py, or set as an environment variable.
 SLACK_TOKEN = os.getenv('SLACK_TOKEN', "")
 
+# User and API tokens for Pushover access.
+# Should be put in private.py, or set as an environment variable.
+PUSHOVER_USER = os.getenv('PUSHOVER_USER', "")
+PUSHOVER_TOKEN = os.getenv('PUSHOVER_TOKEN', "")
+
+# The device to send messages to in pushover. Leave blank for all devices.
+# Should be put in private.py, or set as an environment variable.
+PUSHOVER_DEVICE = os.getenv('PUSHOVER_DEVICE', None)
+
 # Any private settings are imported here.
 try:
     from private import *

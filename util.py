@@ -41,6 +41,15 @@ def post_listing_to_slack(sc, listing):
         username='pybot', icon_emoji=':robot_face:'
     )
 
+def post_listing_to_pushover(pc, listing):
+    """
+    Posts the list to Pushover
+    :param pc: A pushover client.
+    :param listing: A record of the listing.
+    """
+    desc = "{0} | {1} | {2} | <{3}>".format(listing["area"], listing["price"], listing["name"], listing["url"])
+    pc.send_message(desc, title='New listing found')
+
 def find_points_of_interest(geotag, location):
     """
     Find points of interest, like transit, near a result.
